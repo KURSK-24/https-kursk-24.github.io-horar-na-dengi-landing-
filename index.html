@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Хорар на деньги</title>
+<style>
+  :root{
+    --bg:#080b16;
+    --bg-deep:#05070f;
+    --panel:#131a2c;
+    --panel-2:#171f34;
+    --ink:#f5f0ea;
+    --ink-dim:rgba(245,240,234,0.78);
+    --ink-faint:rgba(245,240,234,0.52);
+    --gold-1:#e3b494;
+    --gold-2:#c98a68;
+    --grad-1:#e3b494;
+    --grad-2:#c98a68;
+    --blue-acc:#8fb4d9;
+    --line:rgba(245,240,234,0.12);
+    --rust:#c98a68;
+    --serif:Georgia,"Iowan Old Style","Times New Roman",serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(60% 40% at 80% 8%, rgba(227,180,148,0.14), transparent 60%),
+      radial-gradient(50% 35% at 15% 30%, rgba(143,180,217,0.08), transparent 60%),
+      var(--bg);
+    color:var(--ink);
+    font-family:var(--sans);
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+    position:relative;
+  }
+  .stars{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.9;}
+  .stars circle.tw{animation:twinkle 3.6s ease-in-out infinite;}
+  ::selection{background:rgba(227,180,148,0.3);color:var(--ink);}
+  a{color:inherit;}
+  h1,h2,h3{font-family:var(--serif);font-weight:700;text-wrap:balance;margin:0;}
+  p{margin:0;color:var(--ink-dim);text-wrap:pretty;}
+  .num{font-variant-numeric:tabular-nums;}
+  .frame{max-width:640px;margin:0 auto;padding:0 24px;position:relative;z-index:1;text-align:center;}
+  section{padding:60px 0;}
+  section + section{border-top:1px solid var(--line);}
+  .eyebrow{font-size:17px;color:var(--ink-dim);margin-bottom:18px;}
+  .hero{padding-top:56px;padding-bottom:48px;}
+  .kinetic-title{
+    display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:14px 18px;
+    font-family:var(--serif);font-weight:700;text-transform:uppercase;
+    font-size:clamp(30px,7.5vw,48px);line-height:1.05;margin-bottom:28px;
+  }
+  .kinetic-title .grad{
+    background:linear-gradient(90deg, var(--grad-1), var(--grad-2));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .kinetic-title .planet-glyph{font-family:Georgia,serif;font-weight:400;color:var(--gold-1);font-size:.85em;}
+  .kinetic-q{
+    display:flex;flex-wrap:wrap;justify-content:center;gap:12px 20px;margin-bottom:10px;
+    font-family:var(--sans);font-size:22px;letter-spacing:.01em;color:var(--ink);
+  }
+  .kinetic-q.alt{font-family:var(--serif);font-style:italic;font-size:22px;color:var(--ink-dim);margin-bottom:30px;}
+  .hero .lede{font-size:21px;line-height:1.6;color:var(--ink-dim);max-width:46ch;margin:32px auto 6px;}
+  .horar-slide-wrap{overflow:hidden;padding:10px 0 6px;}
+  .horar-slide{
+    display:inline-block;font-family:var(--serif);font-weight:700;text-transform:uppercase;
+    font-size:clamp(34px,8vw,54px);letter-spacing:.04em;
+    background:linear-gradient(90deg, var(--grad-1), var(--grad-2));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  @media (prefers-reduced-motion: no-preference){
+    .horar-slide{transform:translateX(140%);opacity:0;animation:slideIn .7s cubic-bezier(.2,.7,.2,1) forwards;animation-delay:4.3s;}
+  }
+  @keyframes slideIn{to{transform:translateX(0);opacity:1;}}
+  .hero .rentgen{font-size:18px;color:var(--ink-faint);max-width:38ch;margin:22px auto 40px;font-style:italic;}
+  .btn{
+    display:inline-flex;align-items:center;gap:10px;
+    background:linear-gradient(135deg, var(--grad-1), var(--grad-2));
+    color:#0d0a1f;
+    font-family:var(--sans);font-weight:700;font-size:18px;
+    padding:18px 34px;border-radius:999px;
+    text-decoration:none;border:none;
+    box-shadow:0 10px 28px rgba(201,138,104,0.3);
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .btn:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(201,138,104,0.4);}
+  .btn:focus-visible{outline:2px solid var(--gold-1);outline-offset:3px;}
+  .price-sub{display:block;margin-top:14px;color:var(--ink-faint);font-size:14px;}
+  .aspect-demo{margin-top:36px;position:relative;}
+  .aspect-demo svg{display:block;margin:0 auto;max-width:320px;}
+  .ad-label{position:relative;height:0;}
+  .ad-label span{
+    position:absolute;top:-104px;left:50%;transform:translateX(-50%);
+    font-family:var(--serif);font-weight:700;font-size:24px;letter-spacing:.05em;
+  }
+  .ad-yes{color:#8fd6a3;opacity:1;}
+  .ad-no{color:#e0a186;opacity:0;}
+  @media (prefers-reduced-motion: no-preference){
+    .ad-you{animation:adYouMove 6s ease-in-out infinite;transform-box:fill-box;transform-origin:center;}
+    .ad-money{animation:adMoneyMove 6s ease-in-out infinite;transform-box:fill-box;transform-origin:center;}
+    .ad-line{animation:adLine 6s ease-in-out infinite;}
+    .ad-yes{animation:adYes 6s ease-in-out infinite;}
+    .ad-no{animation:adNo 6s ease-in-out infinite;}
+  }
+  @keyframes adYouMove{0%,40%{transform:translateX(0);} 50%,90%{transform:translateX(-18px);} 100%{transform:translateX(0);}}
+  @keyframes adMoneyMove{0%,40%{transform:translateX(0);} 50%,90%{transform:translateX(18px);} 100%{transform:translateX(0);}}
+  @keyframes adLine{0%,40%{opacity:1;} 50%,90%{opacity:.12;} 100%{opacity:1;}}
+  @keyframes adYes{0%,35%{opacity:1;} 45%,90%{opacity:0;} 100%{opacity:1;}}
+  @keyframes adNo{0%,35%{opacity:0;} 50%,85%{opacity:1;} 95%,100%{opacity:0;}}
+  h2{font-size:31px;line-height:1.25;margin-bottom:26px;}
+  .section-body p{margin-bottom:18px;font-size:19px;line-height:1.7;}
+  .section-body p:last-child{margin-bottom:0;}
+  strong{color:var(--ink);font-weight:700;}
+  ul.plain{list-style:none;padding:0;margin:0;display:grid;gap:14px;text-align:left;}
+  ul.plain li{
+    padding:20px 22px;background:var(--panel);border:1px solid var(--line);
+    color:var(--ink);font-size:18px;line-height:1.5;position:relative;padding-left:48px;border-radius:14px;
+    text-wrap:pretty;
+  }
+  ul.plain li::before{
+    content:"✦";position:absolute;left:18px;top:18px;
+    background:linear-gradient(135deg, var(--grad-1), var(--grad-2));
+    -webkit-background-clip:text;background-clip:text;color:transparent;font-size:16px;
+  }
+  .price-block{
+    text-align:center;background:var(--panel);border:1px solid rgba(227,180,148,0.25);
+    padding:44px 30px;border-radius:24px;
+  }
+  .price-block .price{
+    font-family:var(--serif);font-size:56px;font-weight:700;
+    background:linear-gradient(135deg, var(--gold-1), var(--gold-2));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    letter-spacing:-.01em;display:block;margin-bottom:10px;
+  }
+  .price-block p{font-size:18px;margin-bottom:26px;}
+  .bridge{background:var(--panel-2);border:1px solid var(--line);padding:36px 28px;border-radius:24px;}
+  .bridge h2{margin-bottom:14px;font-size:24px;}
+  .bridge p{font-size:17px;}
+  footer{padding:36px 0 56px;color:var(--ink-faint);font-size:13px;}
+  footer p + p{margin-top:6px;}
+  footer a{color:var(--ink-faint);text-decoration:underline;text-decoration-color:var(--line);}
+  @media (prefers-reduced-motion: no-preference){
+    .reveal{opacity:0;transform:translateY(14px);animation:reveal .6s ease forwards;}
+    .coin{animation:fall 3.5s ease-in-out infinite;}
+    .coin:nth-child(2){animation-delay:.5s;}
+    .coin:nth-child(3){animation-delay:1s;}
+    .coin:nth-child(4){animation-delay:1.5s;}
+    .coin:nth-child(5){animation-delay:.25s;}
+  }
+  @keyframes reveal{to{opacity:1;transform:translateY(0);}}
+  @keyframes fall{0%{transform:translateY(-6px);opacity:.4;} 50%{transform:translateY(4px);opacity:1;} 100%{transform:translateY(-6px);opacity:.4;}}
+  @keyframes twinkle{0%,100%{opacity:.25;} 50%{opacity:1;}}
+  @media (prefers-reduced-motion: no-preference){
+    .orbit{animation:orbit 120s linear infinite;transform-origin:300px 300px;}
+    .orbit.rev{animation-direction:reverse;animation-duration:160s;}
+  }
+  @keyframes orbit{to{transform:rotate(360deg);}}
+  @media (prefers-reduced-motion: no-preference){
+    .pop{opacity:0;display:inline-block;animation:popIn .55s cubic-bezier(.2,.8,.3,1.15) forwards;}
+    .k1{animation-delay:.1s;} .k2{animation-delay:.5s;} .k3{animation-delay:.9s;} .k4{animation-delay:1.3s;}
+    .q1{animation-delay:1.9s;} .q2{animation-delay:2.25s;}
+    .q3{animation-delay:2.75s;} .q4{animation-delay:3.1s;}
+    .p5{animation-delay:3.7s;}
+  }
+  @keyframes popIn{0%{opacity:0;transform:scale(.75) translateY(6px);} 70%{opacity:1;transform:scale(1.05) translateY(0);} 100%{opacity:1;transform:scale(1) translateY(0);}}
+  .callout{
+    margin-top:24px;padding:22px 24px;border-radius:16px;text-align:left;
+    background:linear-gradient(135deg, rgba(227,180,148,0.14), rgba(143,180,217,0.06));
+    border:1px solid rgba(227,180,148,0.35);
+  }
+  .callout-label{font-family:var(--serif);font-weight:700;font-size:19px;color:var(--gold-1);margin-bottom:8px;}
+  .callout p{font-size:16px;line-height:1.6;}
+  .qlist{text-align:left;display:grid;gap:10px;margin-top:8px;}
+  .qgroup-label{font-size:13px;color:var(--gold-1);text-transform:uppercase;letter-spacing:.08em;margin:22px 0 10px;font-weight:700;}
+  .qgroup-label:first-child{margin-top:0;}
+  .qlist li{list-style:none;padding:16px 18px;background:var(--panel);border:1px solid var(--line);border-radius:14px;font-size:18px;color:var(--ink);}
+  .quiz{background:var(--panel);border:1px solid rgba(227,180,148,0.25);border-radius:24px;padding:32px 26px;text-align:left;}
+  .quiz h2{text-align:center;margin-bottom:8px;}
+  .quiz .quiz-sub{text-align:center;margin-bottom:24px;font-size:16px;}
+  .quiz-options{display:grid;gap:10px;}
+  .quiz-opt{
+    display:block;width:100%;text-align:left;background:var(--panel-2);border:1px solid var(--line);
+    color:var(--ink);font-size:16px;font-family:var(--sans);padding:15px 18px;border-radius:12px;
+    cursor:pointer;transition:border-color .15s ease, transform .1s ease;
+  }
+  .quiz-opt:hover{border-color:var(--grad-2);}
+  .quiz-opt:active{transform:scale(.99);}
+  .quiz-opt.selected{border-color:var(--gold-1);background:rgba(243,192,136,0.1);}
+  .quiz-result{
+    display:none;margin-top:22px;padding:22px;border-radius:16px;
+    background:rgba(227,180,148,0.08);border:1px solid rgba(227,180,148,0.3);
+    text-align:center;
+  }
+  .quiz-result.show{display:block;}
+  .quiz-result .qr-label{font-size:13px;color:var(--gold-1);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;font-weight:700;}
+  .quiz-result .qr-question{font-family:var(--serif);font-size:22px;color:var(--ink);margin-bottom:12px;}
+  .quiz-result .qr-bridge{font-size:17px;color:var(--ink);margin-bottom:20px;text-align:left;line-height:1.6;}
+  .quiz-result .qr-bridge span{color:var(--gold-1);font-style:italic;}
+  .quiz-result .qr-inside-label{font-family:var(--serif);font-weight:700;font-size:24px;color:var(--ink);text-align:left;margin-bottom:14px;}
+</style>
+</head>
+<body>
+
+<svg class="stars" aria-hidden="true" viewBox="0 0 1000 1600" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <radialGradient id="moonFade" cx="50%" cy="50%" r="50%">
+      <stop offset="55%" stop-color="#080b16" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#080b16" stop-opacity=".85"/>
+    </radialGradient>
+    <symbol id="sparkle" viewBox="0 0 24 24">
+      <path d="M12 0 L14.2 9.8 L24 12 L14.2 14.2 L12 24 L9.8 14.2 L0 12 L9.8 9.8 Z"/>
+    </symbol>
+  </defs>
+
+  <g fill="none" stroke="#e3b494" opacity=".22" stroke-width="1">
+    <ellipse cx="760" cy="220" rx="360" ry="190" transform="rotate(-16 760 220)"/>
+    <ellipse cx="180" cy="520" rx="420" ry="220" transform="rotate(12 180 520)"/>
+    <ellipse cx="820" cy="1180" rx="380" ry="200" transform="rotate(-10 820 1180)"/>
+  </g>
+  <g fill="none" stroke="#ffffff" opacity=".14" stroke-width="1">
+    <ellipse cx="500" cy="900" rx="470" ry="470"/>
+    <ellipse cx="120" cy="1080" rx="300" ry="160" transform="rotate(20 120 1080)"/>
+  </g>
+
+  <g fill="none" stroke="#e3b494" stroke-width="1.5" stroke-dasharray="1 9" stroke-linecap="round" opacity=".55">
+    <path d="M 60 120 Q 260 40 460 130 T 900 90"/>
+    <path d="M 100 1300 Q 340 1220 560 1310 T 950 1260"/>
+  </g>
+  <path d="M 40 90 L 130 150" stroke="#ffffff" stroke-width="2" opacity=".5" stroke-linecap="round"/>
+
+  <g class="orbit" style="transform-origin:150px 260px" fill="none" stroke="#e3b494" stroke-width="1" opacity=".7">
+    <circle cx="150" cy="260" r="34"/>
+    <ellipse cx="150" cy="260" rx="34" ry="11"/>
+    <ellipse cx="150" cy="260" rx="11" ry="34"/>
+  </g>
+  <g class="orbit rev" style="transform-origin:880px 700px" fill="none" stroke="#ffffff" stroke-width="1" opacity=".55">
+    <circle cx="880" cy="700" r="22"/>
+    <ellipse cx="880" cy="700" rx="22" ry="7"/>
+  </g>
+
+  <g class="orbit" style="transform-origin:500px 500px">
+    <circle cx="640" cy="380" r="6" fill="#8fb4d9"/>
+    <circle cx="300" cy="180" r="4" fill="#e3b494"/>
+  </g>
+  <g class="orbit rev" style="transform-origin:500px 900px">
+    <circle cx="760" cy="980" r="5" fill="#ffffff"/>
+    <circle cx="260" cy="860" r="7" fill="#c98a68"/>
+  </g>
+
+  <g>
+    <use href="#sparkle" x="70" y="60" width="26" height="26" fill="#ffffff" opacity=".9"/>
+    <use href="#sparkle" x="640" y="150" width="18" height="18" fill="#e3b494" opacity=".8"/>
+    <use href="#sparkle" x="900" y="60" width="22" height="22" fill="#8fb4d9" opacity=".85"/>
+    <use href="#sparkle" x="60" y="480" width="16" height="16" fill="#ffffff" opacity=".7"/>
+    <use href="#sparkle" x="920" y="420" width="20" height="20" fill="#e3b494" opacity=".8"/>
+    <use href="#sparkle" x="340" y="30" width="14" height="14" fill="#ffffff" opacity=".65"/>
+    <use href="#sparkle" x="80" y="1150" width="20" height="20" fill="#e3b494" opacity=".8"/>
+    <use href="#sparkle" x="880" y="1240" width="24" height="24" fill="#ffffff" opacity=".85"/>
+    <use href="#sparkle" x="500" y="1420" width="16" height="16" fill="#8fb4d9" opacity=".7"/>
+    <use href="#sparkle" x="200" y="1400" width="18" height="18" fill="#e3b494" opacity=".75"/>
+  </g>
+  <g fill="#ffffff" opacity=".85">
+    <circle class="tw" cx="12%" cy="8%" r="1.4"/><circle cx="30%" cy="4%" r="1"/><circle class="tw" cx="55%" cy="9%" r="1.6"/>
+    <circle cx="80%" cy="14%" r="1.2"/><circle class="tw" cx="6%" cy="30%" r="1"/><circle cx="45%" cy="26%" r="1.4"/>
+    <circle class="tw" cx="70%" cy="35%" r="1"/><circle cx="90%" cy="45%" r="1.3"/><circle class="tw" cx="20%" cy="55%" r="1"/>
+    <circle cx="60%" cy="62%" r="1.5"/><circle class="tw" cx="85%" cy="70%" r="1"/><circle cx="10%" cy="75%" r="1.2"/>
+    <circle class="tw" cx="40%" cy="85%" r="1"/><circle cx="65%" cy="90%" r="1.4"/><circle class="tw" cx="92%" cy="88%" r="1"/>
+  </g>
+
+  <g style="transform-origin:500px 760px">
+    <circle cx="500" cy="760" r="230" fill="none" stroke="#e3b494" opacity=".18"/>
+    <circle cx="500" cy="760" r="180" fill="none" stroke="#e3b494" opacity=".22"/>
+    <g stroke="#e3b494" stroke-width="1" opacity=".28">
+      <line x1="500" y1="600" x2="500" y2="920"/>
+      <line x1="340" y1="760" x2="660" y2="760"/>
+      <line x1="386" y1="646" x2="614" y2="874"/>
+      <line x1="614" y1="646" x2="386" y2="874"/>
+    </g>
+    <circle cx="500" cy="760" r="86" fill="#e3b494"/>
+    <circle cx="536" cy="742" r="80" fill="#080b16"/>
+    <g class="orbit" style="transform-origin:500px 760px">
+      <circle cx="500" cy="574" r="9" fill="#e3b494"/>
+      <circle cx="600" cy="600" r="8" fill="none" stroke="#e3b494"/>
+      <circle cx="670" cy="670" r="7" fill="#e3b494" opacity=".7"/>
+      <circle cx="400" cy="600" r="8" fill="none" stroke="#e3b494"/>
+      <circle cx="330" cy="670" r="7" fill="#e3b494" opacity=".7"/>
+    </g>
+    <circle cx="500" cy="760" r="230" fill="url(#moonFade)"/>
+  </g>
+</svg>
+
+<div class="frame">
+
+  <section class="hero reveal">
+    <p class="eyebrow">Ольга Прядко · Астрологика</p>
+
+    <div class="kinetic-title">
+      <span class="pop k1">Деньги!</span>
+      <span class="pop k2">Деньги?</span>
+      <span class="pop k3 grad">Деньги</span>
+      <span class="pop k4 planet-glyph">♃</span>
+    </div>
+
+    <div class="kinetic-q">
+      <span class="pop q1">Вернуть ли долг?</span>
+      <span class="pop q2">Дадут ли кредит?</span>
+    </div>
+    <div class="kinetic-q alt">
+      <span class="pop q3">Стоит ли инвестировать?</span>
+      <span class="pop q4">Хватит ли денег?</span>
+    </div>
+
+    <p class="pop p5 lede">На такие вопросы можно получить точный ответ за один вечер, без консультации у астролога, нумеролога, таролога и любой другой «гадалки» - с помощью</p>
+    <div class="horar-slide-wrap"><span class="horar-slide">ХОРАР</span></div>
+    <p class="rentgen">Хорар - это не гадание. Это математический рентген реальности на момент вопроса</p>
+
+    <a href="#PLACEHOLDER-PAYMENT-LINK" class="btn">Разобраться самостоятельно - 990 ₽</a>
+  </section>
+
+  <section class="reveal">
+    <h2>Что такое хорар</h2>
+    <div class="section-body">
+      <p>Хорарная карта строится не на момент вашего рождения, а на момент, когда у вас созрел вопрос. В этой карте вы - управитель одного дома, а деньги, о которых вы спрашиваете, - управитель другого</p>
+      <p>Как только между этими двумя фигурами появляется сближающийся аспект - это математический ответ «да». Нет аспекта, или он расходится - ответ «нет». Это не гадание, это расчёт</p>
+    </div>
+
+    <div class="aspect-demo" aria-hidden="true">
+      <svg viewBox="0 0 320 120" width="100%" height="120">
+        <circle class="ad-you" cx="70" cy="60" r="14" fill="#e3b494"/>
+        <text x="70" y="92" text-anchor="middle" fill="rgba(245,240,234,0.52)" font-size="13" font-family="Georgia,serif">Вы</text>
+        <circle class="ad-money" cx="250" cy="60" r="14" fill="#8fb4d9"/>
+        <text x="250" y="92" text-anchor="middle" fill="rgba(245,240,234,0.52)" font-size="13" font-family="Georgia,serif">Деньги</text>
+        <line class="ad-line" x1="86" y1="60" x2="234" y2="60" stroke="#e3b494" stroke-width="2"/>
+      </svg>
+      <div class="ad-label"><span class="ad-yes">ДА</span><span class="ad-no">НЕТ</span></div>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <h2>На какие вопросы отвечает хорар на деньги</h2>
+    <div class="qgroup-label">Свои деньги</div>
+    <ul class="qlist">
+      <li>Принесёт ли прибыль этот проект или вложение?</li>
+      <li>Стоит ли вкладывать деньги сейчас?</li>
+      <li>Стоит ли покупать эту вещь или недвижимость сейчас?</li>
+      <li>Получу ли я эту оплату или гонорар вовремя?</li>
+      <li>Хватит ли денег на важную цель в этом сезоне?</li>
+      <li>Стоит ли продавать актив сейчас или подождать?</li>
+      <li>Вырастет ли мой доход в этом сезоне?</li>
+    </ul>
+    <div class="qgroup-label">Чужие деньги, долги</div>
+    <ul class="qlist">
+      <li>Вернут ли мне долг?</li>
+      <li>Стоит ли занимать в долг сейчас?</li>
+      <li>Стоит ли одалживать деньги, если просят?</li>
+      <li>Получу ли я эту компенсацию или возврат от кого-то?</li>
+    </ul>
+    <div class="callout">
+      <div class="callout-label">Оба блока - в одном мини-продукте</div>
+      <p>Разбираем и ваши деньги, и чужие/долги - это два родственных вопроса, которые решаются одной и той же логикой чтения</p>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <div class="quiz">
+      <h2>Какой у вас сейчас вопрос?</h2>
+      <p class="quiz-sub">Выберите то, что ближе всего - и получите свой вопрос из хорарной практики</p>
+      <div class="quiz-options" id="quizOptions">
+        <button type="button" class="quiz-opt" data-q="Вернут ли мне долг?" data-house="через дом чужих денег и долгов">Мне должны деньги, а сроки уже прошли</button>
+        <button type="button" class="quiz-opt" data-q="Стоит ли занимать в долг сейчас?" data-house="через дом чужих денег и долгов">Думаю, брать ли в долг</button>
+        <button type="button" class="quiz-opt" data-q="Принесёт ли прибыль этот проект или вложение?" data-house="через дом ваших собственных денег">Не понимаю, стоит ли вкладываться в проект</button>
+        <button type="button" class="quiz-opt" data-q="Стоит ли покупать эту вещь или недвижимость сейчас?" data-house="через дом ваших собственных денег">Сомневаюсь, покупать ли крупную вещь сейчас</button>
+        <button type="button" class="quiz-opt" data-q="Хватит ли денег на важную цель в этом сезоне?" data-house="через дом ваших собственных денег">Не уверена, хватит ли денег на важное</button>
+        <button type="button" class="quiz-opt" data-q="Стоит ли продавать актив сейчас или подождать?" data-house="через дом ваших собственных денег">Продать актив сейчас или подождать</button>
+      </div>
+      <div class="quiz-result" id="quizResult">
+        <div class="qr-label">Ваш вопрос</div>
+        <div class="qr-question" id="qrQuestion"></div>
+        <p class="qr-bridge">Его вы точно сможете разобрать сами за один вечер, <span id="qrHouse"></span>, в практическом мини-курсе «Хорар на деньги»</p>
+        <div class="qr-inside-label">Что получишь внутри</div>
+        <ul class="plain" style="margin-bottom:22px;">
+          <li>Ссылку на сервис, где строятся карты - и куда что вводить</li>
+          <li>Чёткие правила, как задать вопрос, чтобы получить точный ответ, а не расплывчатую картину</li>
+          <li>Какие дома и управители искать, чтобы найти себя и свои деньги на карте - разберётся даже школьник</li>
+          <li>Как понять, есть между вами связь или нет</li>
+          <li>Вишенка на торте - градус до точного аспекта покажет, через сколько это случится: через 3 дня, через 3 недели или через 3 месяца</li>
+        </ul>
+        <a href="#PLACEHOLDER-PAYMENT-LINK" class="btn">За вечер найти ответ - 990 ₽</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <h2>Каким бы ни был ваш вопрос про деньги - формат один</h2>
+    <ul class="plain">
+      <li>«Заполняем карту за 5 минут» - какой сервис открыть и что куда вести, подробно, чётко, по шагам</li>
+      <li>Правило - как задать вопрос, чтобы получить точный ответ</li>
+      <li>Шпаргалка - какой дом смотреть в своём или в чужом денежном вопросе</li>
+      <li>11 готовых вопросов-шаблонов для тренировки</li>
+      <li>Словарь ответов + тайминг - как выглядит «да», как выглядит «нет», и через сколько это случится</li>
+    </ul>
+  </section>
+
+  <section class="reveal">
+    <h2>Как это выглядит на практике</h2>
+    <div class="section-body">
+      <p>Оплачиваете - сразу получаете доступ в закрытый Telegram-канал, где лежат все четыре материала файлами. Открываете, проходите за один вечер, строите карту на свой вопрос</p>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <div class="price-block">
+      <span class="price">990 ₽</span>
+      <p>Без месяцев обучения. Урок + шпаргалка + практика на своём вопросе - сегодня вечером</p>
+      <a href="#PLACEHOLDER-PAYMENT-LINK" class="btn">Оплатить и получить доступ</a>
+      <span class="price-sub">После оплаты - сразу ссылка на закрытый Telegram-канал с материалами</span>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <div class="bridge">
+      <h2>А дальше?</h2>
+      <p style="margin-bottom:18px;">Сегодня - только деньги. Но когда вы полюбите этот инструмент, той же логикой читаются и другие вопросы:</p>
+      <ul class="plain" style="margin-bottom:18px;">
+        <li>Любит или нет, вернётся ли бывший</li>
+        <li>Стоит ли менять работу, получу ли повышение</li>
+        <li>Правильный ли диагноз, поможет ли лечение</li>
+        <li>Где искать потерянную вещь или документы</li>
+        <li>Состоится ли поездка, стоит ли переезжать</li>
+      </ul>
+      <p>Научиться читать любой из этих вопросов - это уже «летний Хорар»</p>
+    </div>
+  </section>
+
+  <footer>
+    <p>© АСТРОВЕГИС · Астрологика с Ольгой Прядко</p>
+    <p>Плейсхолдер: ссылка на оферту и политику конфиденциальности - добавить перед публикацией</p>
+  </footer>
+
+</div>
+
+<script>
+  (function(){
+    var opts = document.querySelectorAll('.quiz-opt');
+    var result = document.getElementById('quizResult');
+    var qEl = document.getElementById('qrQuestion');
+    var hEl = document.getElementById('qrHouse');
+    opts.forEach(function(btn){
+      btn.addEventListener('click', function(){
+        opts.forEach(function(b){ b.classList.remove('selected'); });
+        btn.classList.add('selected');
+        qEl.textContent = btn.getAttribute('data-q');
+        hEl.textContent = btn.getAttribute('data-house');
+        result.classList.add('show');
+        result.scrollIntoView({behavior:'smooth', block:'center'});
+      });
+    });
+  })();
+</script>
+
+</body>
+</html>
